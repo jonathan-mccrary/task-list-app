@@ -1,43 +1,59 @@
 <template>
-  <button :class="buttonClass" @click="handleClick">
+  <button :class="buttonClass" @click="onClick" :disabled="disabled">
     <slot></slot>
   </button>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import { defineComponent, PropType, computed } from "vue";
 
 export default defineComponent({
   name: "VariantButton",
   props: {
     variant: {
-      type: String as PropType<"primary" | "secondary" | "danger" | "warning">,
-      default: "primary",
+      type: String as PropType<
+        | "primary"
+        | "secondary"
+        | "success"
+        | "danger"
+        | "warning"
+        | "info"
+        | "light"
+        | "dark"
+      >,
+      required: true,
+    },
+    outline: {
+      type: Boolean,
+      default: false,
     },
     size: {
       type: String as PropType<"sm" | "md" | "lg">,
       default: "md",
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
     onClick: {
-      type: Function as PropType<() => void>,
+      type: Function as PropType<(event: Event) => void>,
       required: true,
     },
   },
-  computed: {
-    buttonClass(): string[] {
-      let btnSize;
-      if (this.size === "sm") {
-        btnSize = "btn-sm";
-      } else {
-        btnSize = "btn-lg";
-      }
-      return ["btn", `btn-${this.variant}`, btnSize];
-    },
-  },
-  methods: {
-    handleClick() {
-      this.onClick();
-    },
+  setup(props) {
+    const buttonClass = computed(() => {
+      return `btn btn-${props.outline ? "outline-" : ""}${props.variant} btn-${
+        props.size
+      }`;
+    });
+
+    return {
+      buttonClass,
+    };
   },
 });
 </script>
+
+<style>
+/* No scoped styles here */
+</style>

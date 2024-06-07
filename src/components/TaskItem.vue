@@ -1,55 +1,69 @@
 <template>
-  <div class="accordion-item">
-    <h2 class="accordion-header" :id="'heading' + localTask.id">
-      <button
-        class="accordion-button collapsed"
-        type="button"
-        data-bs-toggle="collapse"
-        :data-bs-target="'#collapse' + localTask.id"
-        aria-expanded="false"
-        :aria-controls="'collapse' + localTask.id"
-      >
-        {{ localTask.title }}
-      </button>
-    </h2>
-    <div
-      :id="'collapse' + localTask.id"
-      class="accordion-collapse collapse"
-      :aria-labelledby="'heading' + localTask.id"
-      data-bs-parent="#taskAccordion"
-    >
-      <div class="accordion-body">
-        <div class="card">
-          <div class="card-body">
-            <TaskItemContent :task="localTask" />
-            <div class="mt-3">
-              <VariantButton
-                :variant="'danger'"
-                :size="'sm'"
-                @click="removeTask"
-                class="me-2"
-              >
-                Remove
-              </VariantButton>
-              <VariantButton
-                :variant="'secondary'"
-                :size="'sm'"
-                @click="increasePriority"
-                :disabled="!canRaisePriority"
-                class="me-2"
-              >
-                ↑
-              </VariantButton>
-              <VariantButton
-                :variant="'secondary'"
-                :size="'sm'"
-                @click="decreasePriority"
-                :disabled="!canLowerPriority"
-              >
-                ↓
-              </VariantButton>
-            </div>
+  <div class="col">
+    <div class="card">
+      <div class="card-header">{{ localTask.title }}</div>
+      <div class="card-body">
+        <div class="btn-group d-flex justify-content-center">
+          <div class="btn-group">
+            <VariantButton
+              :variant="localTask.done ? 'secondary' : 'success'"
+              size="sm"
+              @click="toggleDone"
+            >
+              {{ localTask.done ? "Not Done" : "Mark Done" }}
+            </VariantButton>
+            <VariantButton variant="danger" size="sm" @click="removeTask"
+              >Remove</VariantButton
+            >
           </div>
+        </div>
+        <div class="d-flex">
+          <div class="btn-group-vertical me-2 mt-2 mb-4">
+            <VariantButton
+              variant="danger"
+              :outline="true"
+              size="sm"
+              @click="increaseImportance"
+              :disabled="!canRaiseImportance"
+            >
+              ↑ I
+            </VariantButton>
+            <VariantButton
+              variant="success"
+              :outline="true"
+              size="sm"
+              @click="decreaseImportance"
+              :disabled="!canLowerImportance"
+            >
+              I ↓
+            </VariantButton>
+          </div>
+          <div class="mb-3 p-2">
+            <PriorityMatrix
+              :importance="localTask.importance"
+              :urgency="localTask.urgency"
+            />
+          </div>
+        </div>
+        <div class="btn-group d-flex justify-content-center ms-5 mb-1">
+          <VariantButton
+            variant="success"
+            :outline="true"
+            size="sm"
+            @click="decreaseUrgency"
+            :disabled="!canLowerUrgency"
+          >
+            ← U
+          </VariantButton>
+          <VariantButton
+            variant="danger"
+            :outline="true"
+            size="sm"
+            @click="increaseUrgency"
+            :disabled="!canRaiseUrgency"
+          >
+            U →
+          </VariantButton>
         </div>
       </div>
     </div>
@@ -58,15 +72,15 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-import { Task, Priority } from "../interfaces/Task";
+import { Task, Importance, Urgency } from "../interfaces/Task";
 import VariantButton from "./VariantButton.vue";
-import TaskItemContent from "./TaskItemContent.vue";
+import PriorityMatrix from "./PriorityMatrix.vue";
 
 export default defineComponent({
   name: "TaskItem",
   components: {
     VariantButton,
-    TaskItemContent,
+    PriorityMatrix,
   },
   props: {
     task: {
@@ -77,32 +91,61 @@ export default defineComponent({
   data() {
     return {
       localTask: { ...this.task },
+      importances: [Importance.High, Importance.Medium, Importance.Low],
+      urgencies: [Urgency.Low, Urgency.Medium, Urgency.High],
     };
   },
   computed: {
-    canRaisePriority(): boolean {
-      return this.localTask.priority !== Priority.High;
+    canRaiseImportance(): boolean {
+      return this.localTask.importance !== Importance.High;
     },
-    canLowerPriority(): boolean {
-      return this.localTask.priority !== Priority.Low;
+    canLowerImportance(): boolean {
+      return this.localTask.importance !== Importance.Low;
+    },
+    canRaiseUrgency(): boolean {
+      return this.localTask.urgency !== Urgency.High;
+    },
+    canLowerUrgency(): boolean {
+      return this.localTask.urgency !== Urgency.Low;
+    },
+    priority(): number {
+      return this.localTask.importance + this.localTask.urgency;
     },
   },
   methods: {
     removeTask() {
       this.$emit("remove-task", this.localTask.id);
     },
-    increasePriority() {
-      if (this.localTask.priority === Priority.Low)
-        this.localTask.priority = Priority.Medium;
-      else if (this.localTask.priority === Priority.Medium)
-        this.localTask.priority = Priority.High;
+    increaseImportance() {
+      if (this.localTask.importance === Importance.Low)
+        this.localTask.importance = Importance.Medium;
+      else if (this.localTask.importance === Importance.Medium)
+        this.localTask.importance = Importance.High;
       this.emitUpdateTask();
     },
-    decreasePriority() {
-      if (this.localTask.priority === Priority.High)
-        this.localTask.priority = Priority.Medium;
-      else if (this.localTask.priority === Priority.Medium)
-        this.localTask.priority = Priority.Low;
+    decreaseImportance() {
+      if (this.localTask.importance === Importance.High)
+        this.localTask.importance = Importance.Medium;
+      else if (this.localTask.importance === Importance.Medium)
+        this.localTask.importance = Importance.Low;
+      this.emitUpdateTask();
+    },
+    increaseUrgency() {
+      if (this.localTask.urgency === Urgency.Low)
+        this.localTask.urgency = Urgency.Medium;
+      else if (this.localTask.urgency === Urgency.Medium)
+        this.localTask.urgency = Urgency.High;
+      this.emitUpdateTask();
+    },
+    decreaseUrgency() {
+      if (this.localTask.urgency === Urgency.High)
+        this.localTask.urgency = Urgency.Medium;
+      else if (this.localTask.urgency === Urgency.Medium)
+        this.localTask.urgency = Urgency.Low;
+      this.emitUpdateTask();
+    },
+    toggleDone() {
+      this.localTask.done = !this.localTask.done;
       this.emitUpdateTask();
     },
     emitUpdateTask() {
@@ -113,8 +156,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.done {
-  color: #777;
-  text-decoration: line-through;
+.vertical {
+  writing-mode: vertical-rl;
 }
 </style>

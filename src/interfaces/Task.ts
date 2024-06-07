@@ -1,22 +1,39 @@
-export interface Task {
-  deadline: Date;
-  description: string;
-  category: Category;
-  title: string;
+export enum Importance {
+  High = 3,
+  Medium = 2,
+  Low = 1,
+}
+
+export enum Urgency {
+  High = 3,
+  Medium = 2,
+  Low = 1,
+}
+
+export class Task {
   id: number;
-  done: boolean;
-  priority: Priority;
+  title: string;
+  importance: Importance;
+  urgency: Urgency;
   createdDatetime: Date;
-}
+  done: boolean;
+  priority: number;
 
-export enum Priority {
-  High = "High",
-  Medium = "Medium",
-  Low = "Low",
-}
-
-export enum Category {
-  Home = "Home",
-  Work = "Work",
-  Other = "Other",
+  constructor(
+    id: number,
+    title: string,
+    importance: Importance,
+    urgency: Urgency,
+    createdDatetime: Date,
+    done: boolean,
+    priority: number
+  ) {
+    this.id = id;
+    this.title = title;
+    this.importance = importance;
+    this.urgency = urgency;
+    this.createdDatetime = createdDatetime;
+    this.done = done;
+    this.priority = priority;
+  }
 }
