@@ -1,6 +1,6 @@
 <template>
   <div class="col">
-    <div class="card">
+    <div class="card task">
       <div class="card-header task-title">{{ localTask.title }}</div>
       <div class="card-body">
         <div class="btn-group d-flex justify-content-center">
@@ -71,7 +71,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, computed, ref, defineEmits } from "vue";
+import { defineComponent, PropType, computed, ref } from "vue";
 import { Task, Importance, Urgency } from "../interfaces/Task";
 import VariantButton from "./VariantButton.vue";
 import PriorityMatrix from "./PriorityMatrix.vue";
@@ -180,8 +180,12 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.task {
+  box-shadow: 0px 0px 10px white;
+  background-color: #d0e8ff;
+}
 .task-title {
-  background-color: #123684;
+  background-color: #123456;
   color: #fff;
 }
 </style>

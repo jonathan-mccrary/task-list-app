@@ -17,13 +17,13 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #333 !important;
+  background-color: #091b2c !important;
 }
 
 #app1 {
   height: 100%;
   margin: 0;
-  background: #777;
+  background: #535c69;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);

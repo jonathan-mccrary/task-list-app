@@ -117,7 +117,7 @@ const getPriorityValue = (importance: Importance, urgency: Urgency): string => {
 }
 .matrix-cell.four {
   background-image: linear-gradient(to bottom right, yellow, rgb(255, 230, 0));
-  box-shadow: 0px 0px 10px darkgoldenrod;
+  box-shadow: 0px 0px 10px rgb(176, 127, 1);
 }
 .matrix-cell.five {
   background-image: linear-gradient(to bottom right, orange, darkorange);

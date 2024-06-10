@@ -1,7 +1,7 @@
 <template>
-  <div class="card">
+  <div class="card page-border">
     <div class="card-header page-header">Task Priority Manager</div>
-    <div class="card-body">
+    <div class="card-body page-body">
       <div class="row mb-2">
         <div class="col-12">
           <div class="input-group">
@@ -53,11 +53,12 @@
       </div>
       <div class="row mb-2">
         <div class="col-12">
-          <div class="btn-group">
+          <div class="btn-group" style="float: right">
             <VariantButton
               :variant="'primary'"
               :onClick="addTask"
               :disabled="!enableAddTask"
+              :size="'lg'"
             >
               Add Task
             </VariantButton>
@@ -65,6 +66,7 @@
               :variant="'info'"
               :onClick="sortTasks"
               :disabled="!showSortTasks"
+              :size="'lg'"
             >
               Sort Tasks
             </VariantButton>
@@ -72,6 +74,7 @@
               :variant="'success'"
               :onClick="removeCompleted"
               :disabled="!showRemoveCompleted"
+              :size="'lg'"
             >
               Remove Completed
             </VariantButton>
@@ -195,13 +198,24 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.page-border {
+  border-color: #123456;
+  border-radius: 8px;
+}
 .page-header {
-  background-color: #123684;
-  border-radius: 5px;
-  width: 100%;
+  background-color: #123456;
   color: #eee;
   font-size: 30px;
   font-weight: bold;
   padding: 10px;
+}
+
+.page-body {
+  background-color: #7e8bab;
+  border-color: #123456;
+}
+
+.input-group-text {
+  background-color: #d0e8ff;
 }
 </style>
