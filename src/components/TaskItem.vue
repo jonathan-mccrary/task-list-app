@@ -1,7 +1,7 @@
 <template>
   <div class="col">
     <div class="card">
-      <div class="card-header">{{ localTask.title }}</div>
+      <div class="card-header task-title">{{ localTask.title }}</div>
       <div class="card-body">
         <div class="btn-group d-flex justify-content-center">
           <div class="btn-group">
@@ -71,7 +71,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import { defineComponent, PropType, computed, ref, defineEmits } from "vue";
 import { Task, Importance, Urgency } from "../interfaces/Task";
 import VariantButton from "./VariantButton.vue";
 import PriorityMatrix from "./PriorityMatrix.vue";
@@ -88,75 +88,100 @@ export default defineComponent({
       required: true,
     },
   },
-  data() {
-    return {
-      localTask: { ...this.task },
-      importances: [Importance.High, Importance.Medium, Importance.Low],
-      urgencies: [Urgency.Low, Urgency.Medium, Urgency.High],
+  emits: ["remove-task", "update-task"],
+  setup(props, emits) {
+    const localTask = ref<Task>({ ...props.task });
+    const importances = [Importance.High, Importance.Medium, Importance.Low];
+    const urgencies = [Urgency.Low, Urgency.Medium, Urgency.High];
+
+    const canRaiseImportance = computed(
+      () =>
+        !localTask.value.done && localTask.value.importance !== Importance.High
+    );
+    const canLowerImportance = computed(
+      () =>
+        !localTask.value.done && localTask.value.importance !== Importance.Low
+    );
+    const canRaiseUrgency = computed(
+      () => !localTask.value.done && localTask.value.urgency !== Urgency.High
+    );
+    const canLowerUrgency = computed(
+      () => !localTask.value.done && localTask.value.urgency !== Urgency.Low
+    );
+    const priority = computed(
+      () => localTask.value.importance + localTask.value.urgency
+    );
+
+    const removeTask = () => {
+      emits.emit("remove-task", localTask.value.id);
     };
-  },
-  computed: {
-    canRaiseImportance(): boolean {
-      return this.localTask.importance !== Importance.High;
-    },
-    canLowerImportance(): boolean {
-      return this.localTask.importance !== Importance.Low;
-    },
-    canRaiseUrgency(): boolean {
-      return this.localTask.urgency !== Urgency.High;
-    },
-    canLowerUrgency(): boolean {
-      return this.localTask.urgency !== Urgency.Low;
-    },
-    priority(): number {
-      return this.localTask.importance + this.localTask.urgency;
-    },
-  },
-  methods: {
-    removeTask() {
-      this.$emit("remove-task", this.localTask.id);
-    },
-    increaseImportance() {
-      if (this.localTask.importance === Importance.Low)
-        this.localTask.importance = Importance.Medium;
-      else if (this.localTask.importance === Importance.Medium)
-        this.localTask.importance = Importance.High;
-      this.emitUpdateTask();
-    },
-    decreaseImportance() {
-      if (this.localTask.importance === Importance.High)
-        this.localTask.importance = Importance.Medium;
-      else if (this.localTask.importance === Importance.Medium)
-        this.localTask.importance = Importance.Low;
-      this.emitUpdateTask();
-    },
-    increaseUrgency() {
-      if (this.localTask.urgency === Urgency.Low)
-        this.localTask.urgency = Urgency.Medium;
-      else if (this.localTask.urgency === Urgency.Medium)
-        this.localTask.urgency = Urgency.High;
-      this.emitUpdateTask();
-    },
-    decreaseUrgency() {
-      if (this.localTask.urgency === Urgency.High)
-        this.localTask.urgency = Urgency.Medium;
-      else if (this.localTask.urgency === Urgency.Medium)
-        this.localTask.urgency = Urgency.Low;
-      this.emitUpdateTask();
-    },
-    toggleDone() {
-      this.localTask.done = !this.localTask.done;
-      this.emitUpdateTask();
-    },
-    emitUpdateTask() {
-      this.$emit("update-task", this.localTask);
-    },
+
+    const increaseImportance = () => {
+      if (localTask.value.importance === Importance.Low)
+        localTask.value.importance = Importance.Medium;
+      else if (localTask.value.importance === Importance.Medium)
+        localTask.value.importance = Importance.High;
+      emitUpdateTask();
+    };
+
+    const decreaseImportance = () => {
+      if (localTask.value.importance === Importance.High)
+        localTask.value.importance = Importance.Medium;
+      else if (localTask.value.importance === Importance.Medium)
+        localTask.value.importance = Importance.Low;
+      emitUpdateTask();
+    };
+
+    const increaseUrgency = () => {
+      if (localTask.value.urgency === Urgency.Low)
+        localTask.value.urgency = Urgency.Medium;
+      else if (localTask.value.urgency === Urgency.Medium)
+        localTask.value.urgency = Urgency.High;
+      emitUpdateTask();
+    };
+
+    const decreaseUrgency = () => {
+      if (localTask.value.urgency === Urgency.High)
+        localTask.value.urgency = Urgency.Medium;
+      else if (localTask.value.urgency === Urgency.Medium)
+        localTask.value.urgency = Urgency.Low;
+      emitUpdateTask();
+    };
+
+    const toggleDone = () => {
+      localTask.value.done = !localTask.value.done;
+
+      emitUpdateTask();
+    };
+
+    const emitUpdateTask = () => {
+      const updatedTask = { ...localTask.value };
+      emits.emit("update-task", updatedTask);
+    };
+
+    return {
+      localTask,
+      importances,
+      urgencies,
+      canRaiseImportance,
+      canLowerImportance,
+      canRaiseUrgency,
+      canLowerUrgency,
+      priority,
+      removeTask,
+      increaseImportance,
+      decreaseImportance,
+      increaseUrgency,
+      decreaseUrgency,
+      toggleDone,
+    };
   },
 });
 </script>
 
 <style scoped>
-.vertical {
-  writing-mode: vertical-rl;
+.task-title {
+  background-color: #123684;
+  color: #fff;
 }
 </style>

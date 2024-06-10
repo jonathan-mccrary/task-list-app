@@ -26,45 +26,37 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from "vue";
+<script setup lang="ts">
+import { computed, defineProps, PropType } from "vue";
 import { Importance, Urgency } from "../interfaces/Task";
 
-export default defineComponent({
-  name: "PriorityMatrix",
-  props: {
-    importance: {
-      type: Number as PropType<Importance>,
-      required: true,
-    },
-    urgency: {
-      type: Number as PropType<Urgency>,
-      required: true,
-    },
+const props = defineProps({
+  importance: {
+    type: Number as PropType<Importance>,
+    required: true,
   },
-  computed: {
-    importances() {
-      return [Importance.High, Importance.Medium, Importance.Low];
-    },
-    urgencies() {
-      return [Urgency.Low, Urgency.Medium, Urgency.High];
-    },
-  },
-  methods: {
-    isCellActive(importance: Importance, urgency: Urgency): boolean {
-      return importance === this.importance && urgency === this.urgency;
-    },
-    getPriorityValue(importance: Importance, urgency: Urgency): string {
-      if (importance === this.importance && urgency === this.urgency) {
-        const numbers = ["two", "three", "four", "five", "six"];
-        const priority = importance + urgency;
-        return numbers[priority - 2];
-      } else {
-        return "";
-      }
-    },
+  urgency: {
+    type: Number as PropType<Urgency>,
+    required: true,
   },
 });
+
+const importances = computed(() => [
+  Importance.High,
+  Importance.Medium,
+  Importance.Low,
+]);
+const urgencies = computed(() => [Urgency.Low, Urgency.Medium, Urgency.High]);
+
+const getPriorityValue = (importance: Importance, urgency: Urgency): string => {
+  if (importance === props.importance && urgency === props.urgency) {
+    const numbers = ["two", "three", "four", "five", "six"];
+    const priority = importance + urgency;
+    return numbers[priority - 2];
+  } else {
+    return "";
+  }
+};
 </script>
 
 <style scoped>

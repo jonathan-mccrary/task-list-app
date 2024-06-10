@@ -1,98 +1,101 @@
 <template>
   <div class="card">
-    <h3 class="card-header">Task Priority Manager</h3>
-    <div class="row m-2">
-      <div class="col-12">
-        <div class="input-group">
-          <span class="input-group-text" id="basic-addon1">Title</span>
-          <input
-            id="newTaskTitle"
-            type="text"
-            v-model="newTaskTitle"
-            class="form-control"
-          />
+    <div class="card-header page-header">Task Priority Manager</div>
+    <div class="card-body">
+      <div class="row mb-2">
+        <div class="col-12">
+          <div class="input-group">
+            <span class="input-group-text" id="basic-addon1">Title</span>
+            <input
+              id="newTaskTitle"
+              type="text"
+              v-model="newTaskTitle"
+              class="form-control"
+            />
+          </div>
         </div>
       </div>
-    </div>
-    <div class="row m-2">
-      <div class="col-6">
-        <div class="input-group input-group">
-          <span class="input-group-text" id="basic-addon1">
-            <small>Importance</small>
-          </span>
-          <select
-            id="newTaskImportance"
-            v-model="newTaskImportance"
-            class="form-select"
-          >
-            <option :value="Importance.High">High</option>
-            <option :value="Importance.Medium">Medium</option>
-            <option :value="Importance.Low">Low</option>
-          </select>
+      <div class="row mb-2">
+        <div class="col-6">
+          <div class="input-group input-group">
+            <span class="input-group-text" id="basic-addon1">
+              <small>Importance</small>
+            </span>
+            <select
+              id="newTaskImportance"
+              v-model="newTaskImportance"
+              class="form-select"
+            >
+              <option :value="Importance.NoSelection">--Importance--</option>
+              <option :value="Importance.High">High</option>
+              <option :value="Importance.Medium">Medium</option>
+              <option :value="Importance.Low">Low</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="input-group">
+            <span class="input-group-text" id="basic-addon1">
+              <small>Urgency</small>
+            </span>
+            <select
+              id="newTaskUrgency"
+              v-model="newTaskUrgency"
+              class="form-select"
+            >
+              <option :value="Urgency.NoSelection">--Urgency--</option>
+              <option :value="Urgency.High">High</option>
+              <option :value="Urgency.Medium">Medium</option>
+              <option :value="Urgency.Low">Low</option>
+            </select>
+          </div>
         </div>
       </div>
-      <div class="col-6">
-        <div class="input-group">
-          <span class="input-group-text" id="basic-addon1">
-            <small>Urgency</small>
-          </span>
-          <select
-            id="newTaskUrgency"
-            v-model="newTaskUrgency"
-            class="form-select"
-          >
-            <option :value="Urgency.High">High</option>
-            <option :value="Urgency.Medium">Medium</option>
-            <option :value="Urgency.Low">Low</option>
-          </select>
+      <div class="row mb-2">
+        <div class="col-12">
+          <div class="btn-group">
+            <VariantButton
+              :variant="'primary'"
+              :onClick="addTask"
+              :disabled="!enableAddTask"
+            >
+              Add Task
+            </VariantButton>
+            <VariantButton
+              :variant="'info'"
+              :onClick="sortTasks"
+              :disabled="!showSortTasks"
+            >
+              Sort Tasks
+            </VariantButton>
+            <VariantButton
+              :variant="'success'"
+              :onClick="removeCompleted"
+              :disabled="!showRemoveCompleted"
+            >
+              Remove Completed
+            </VariantButton>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="row m-2">
-      <div class="col-12">
-        <div class="btn-group">
-          <VariantButton
-            :variant="'primary'"
-            :onClick="addTask"
-            :disabled="isAddTaskDisabled"
-          >
-            Add Task
-          </VariantButton>
-          <VariantButton
-            :variant="'info'"
-            :onClick="sortTasks"
-            :disabled="!showSortTasks"
-          >
-            Sort Tasks
-          </VariantButton>
-          <VariantButton
-            :variant="'success'"
-            :onClick="removeCompleted"
-            :disabled="!showRemoveCompleted"
-          >
-            Remove Completed
-          </VariantButton>
-        </div>
+      <div
+        class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 mb-2"
+        v-if="showTasks"
+      >
+        <TaskItem
+          v-for="task in tasks"
+          :key="task.id"
+          :task="task"
+          @remove-task="removeTask"
+          @update-task="updateTask"
+        />
       </div>
-    </div>
-    <div
-      class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3 m-2"
-      v-if="showTasks"
-    >
-      <TaskItem
-        v-for="task in tasks"
-        :key="task.id"
-        :task="task"
-        @remove-task="removeTask"
-        @update-task="updateTask"
-      />
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, computed } from "vue";
-import "@vuepic/vue-datepicker/dist/main.css";
 import { Task, Importance, Urgency } from "../interfaces/Task";
 import TaskItem from "./TaskItem.vue";
 import VariantButton from "./VariantButton.vue";
@@ -106,21 +109,18 @@ export default defineComponent({
   setup() {
     const tasks = ref<Task[]>([]);
     const newTaskTitle = ref("");
-    // const newTaskDescription = ref("");
-    const newTaskImportance = ref<Importance>(Importance.Medium);
-    const newTaskUrgency = ref<Urgency>(Urgency.Medium);
-
-    const isAddTaskDisabled = computed(
-      () => !newTaskTitle.value.trim() //|| !newTaskDescription.value.trim()
-    );
+    const newTaskImportance = ref<Importance>(Importance.NoSelection);
+    const newTaskUrgency = ref<Urgency>(Urgency.NoSelection);
 
     const addTask = () => {
-      if (newTaskTitle.value.trim()) {
-        //&& newTaskDescription.value.trim()
+      if (
+        newTaskTitle.value.trim() &&
+        newTaskImportance.value != Importance.NoSelection &&
+        newTaskUrgency.value != Urgency.NoSelection
+      ) {
         tasks.value.push({
           id: Date.now(),
           title: newTaskTitle.value.trim(),
-          //description: newTaskDescription.value.trim(),
           urgency: newTaskUrgency.value,
           done: false,
           importance: newTaskImportance.value,
@@ -128,9 +128,8 @@ export default defineComponent({
           priority: newTaskUrgency.value + newTaskImportance.value,
         });
         newTaskTitle.value = "";
-        //newTaskDescription.value = "";
-        newTaskImportance.value = Importance.Medium;
-        newTaskUrgency.value = Urgency.Medium;
+        newTaskImportance.value = Importance.NoSelection;
+        newTaskUrgency.value = Urgency.NoSelection;
       }
     };
 
@@ -151,10 +150,16 @@ export default defineComponent({
 
     const sortTasks = () => {
       tasks.value = tasks.value.sort((a, b) => {
-        // eslint-disable-next-line prettier/prettier
-        return (b.importance + b.urgency) - (a.importance + a.urgency);
+        return b.importance + b.urgency - (a.importance + a.urgency);
       });
     };
+
+    const enableAddTask = computed(
+      () =>
+        newTaskTitle.value.trim() &&
+        newTaskImportance.value != Importance.NoSelection &&
+        newTaskUrgency.value != Urgency.NoSelection
+    );
 
     const showTasks = computed(() => {
       return tasks.value.length > 0;
@@ -178,7 +183,7 @@ export default defineComponent({
       updateTask,
       removeTask,
       sortTasks,
-      isAddTaskDisabled,
+      enableAddTask,
       showRemoveCompleted,
       showTasks,
       showSortTasks,
@@ -188,3 +193,15 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.page-header {
+  background-color: #123684;
+  border-radius: 5px;
+  width: 100%;
+  color: #eee;
+  font-size: 30px;
+  font-weight: bold;
+  padding: 10px;
+}
+</style>

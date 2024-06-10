@@ -2,12 +2,14 @@ export enum Importance {
   High = 3,
   Medium = 2,
   Low = 1,
+  NoSelection = 0,
 }
 
 export enum Urgency {
   High = 3,
   Medium = 2,
   Low = 1,
+  NoSelection = 0,
 }
 
 export class Task {

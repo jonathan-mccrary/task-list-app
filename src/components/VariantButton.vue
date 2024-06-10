@@ -42,9 +42,8 @@ export default defineComponent({
   },
   setup(props) {
     const buttonClass = computed(() => {
-      return `btn btn-${props.outline ? "outline-" : ""}${props.variant} btn-${
-        props.size
-      }`;
+      return `btn btn-${props.outline ? "outline-" : ""}${props.variant} 
+        btn-${props.size}`;
     });
 
     return {
@@ -53,7 +52,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style>
-/* No scoped styles here */
-</style>

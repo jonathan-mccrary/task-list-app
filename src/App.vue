@@ -4,16 +4,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
 import TaskManager from "./components/TaskManager.vue";
-
-export default defineComponent({
-  name: "App",
-  components: {
-    TaskManager,
-  },
-});
 </script>
 
 <style>
@@ -21,9 +13,7 @@ html {
   background-color: #000;
 }
 body {
-  font-family: Helvetica, sans-serif;
-  /* margin: 0;
-  padding: 20px; */
+  font-family: "Trebuchet MS", sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
