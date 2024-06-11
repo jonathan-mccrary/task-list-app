@@ -4,51 +4,46 @@
   </button>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType, computed } from "vue";
+<script setup lang="ts">
+import { computed, defineProps, PropType } from "vue";
 
-export default defineComponent({
-  name: "VariantButton",
-  props: {
-    variant: {
-      type: String as PropType<
-        | "primary"
-        | "secondary"
-        | "success"
-        | "danger"
-        | "warning"
-        | "info"
-        | "light"
-        | "dark"
-      >,
-      required: true,
-    },
-    outline: {
-      type: Boolean,
-      default: false,
-    },
-    size: {
-      type: String as PropType<"sm" | "md" | "lg">,
-      default: "md",
-    },
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    onClick: {
-      type: Function as PropType<(event: Event) => void>,
-      required: true,
-    },
-  },
-  setup(props) {
-    const buttonClass = computed(() => {
-      return `btn btn-${props.outline ? "outline-" : ""}${props.variant} 
-        btn-${props.size}`;
-    });
+type ButtonVariant =
+  | "primary"
+  | "secondary"
+  | "success"
+  | "danger"
+  | "warning"
+  | "info"
+  | "light"
+  | "dark";
+type ButtonSize = "sm" | "md" | "lg";
 
-    return {
-      buttonClass,
-    };
+const props = defineProps({
+  variant: {
+    type: String as PropType<ButtonVariant>,
+    required: true,
   },
+  outline: {
+    type: Boolean,
+    default: false,
+  },
+  size: {
+    type: String as PropType<ButtonSize>,
+    default: "md",
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  onClick: {
+    type: Function as PropType<(event: Event) => void>,
+    required: true,
+  },
+});
+
+const buttonClass = computed(() => {
+  return `btn btn-${props.outline ? "outline-" : ""}${props.variant} btn-${
+    props.size
+  }`;
 });
 </script>
