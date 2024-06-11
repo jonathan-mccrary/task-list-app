@@ -107,9 +107,6 @@ export default defineComponent({
     const canLowerUrgency = computed(
       () => !localTask.value.done && localTask.value.urgency !== Urgency.Low
     );
-    const priority = computed(
-      () => localTask.value.importance + localTask.value.urgency
-    );
 
     const removeTask = () => {
       emits.emit("remove-task", localTask.value.id);

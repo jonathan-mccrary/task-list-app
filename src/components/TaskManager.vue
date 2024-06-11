@@ -86,7 +86,7 @@
         v-if="showTasks"
       >
         <TaskItem
-          v-for="task in tasks"
+          v-for="task in state.tasks"
           :key="task.id"
           :task="task"
           @remove-task="removeTask"
@@ -98,7 +98,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from "vue";
+import { defineComponent, reactive, ref, computed } from "vue";
 import { Task, Importance, Urgency } from "../interfaces/Task";
 import TaskItem from "./TaskItem.vue";
 import VariantButton from "./VariantButton.vue";
@@ -110,7 +110,10 @@ export default defineComponent({
     VariantButton,
   },
   setup() {
-    const tasks = ref<Task[]>([]);
+    const state = reactive({
+      tasks: ref<Task[]>([]),
+    });
+    //const tasks = ref<Task[]>([]);
     const newTaskTitle = ref("");
     const newTaskImportance = ref<Importance>(Importance.NoSelection);
     const newTaskUrgency = ref<Urgency>(Urgency.NoSelection);
@@ -121,7 +124,7 @@ export default defineComponent({
         newTaskImportance.value != Importance.NoSelection &&
         newTaskUrgency.value != Urgency.NoSelection
       ) {
-        tasks.value.push({
+        state.tasks.push({
           id: Date.now(),
           title: newTaskTitle.value.trim(),
           urgency: newTaskUrgency.value,
@@ -137,22 +140,22 @@ export default defineComponent({
     };
 
     const removeCompleted = () => {
-      tasks.value = tasks.value.filter((task) => !task.done);
+      state.tasks = state.tasks.filter((task) => !task.done);
     };
 
     const updateTask = (updatedTask: Task) => {
-      const index = tasks.value.findIndex((task) => task.id === updatedTask.id);
+      const index = state.tasks.findIndex((task) => task.id === updatedTask.id);
       if (index !== -1) {
-        tasks.value[index] = { ...updatedTask };
+        state.tasks[index] = { ...updatedTask };
       }
     };
 
     const removeTask = (taskId: number) => {
-      tasks.value = tasks.value.filter((task) => task.id !== taskId);
+      state.tasks = state.tasks.filter((task) => task.id !== taskId);
     };
 
     const sortTasks = () => {
-      tasks.value = tasks.value.sort((a, b) => {
+      state.tasks = state.tasks.sort((a, b) => {
         return b.importance + b.urgency - (a.importance + a.urgency);
       });
     };
@@ -165,19 +168,19 @@ export default defineComponent({
     );
 
     const showTasks = computed(() => {
-      return tasks.value.length > 0;
+      return state.tasks.length > 0;
     });
 
     const enableSortTasks = computed(() => {
-      return tasks.value.length > 1;
+      return state.tasks.length > 1;
     });
 
     const enableRemoveCompleted = computed(() => {
-      return tasks.value.length > 0 && tasks.value.some((task) => task.done);
+      return state.tasks.length > 0 && state.tasks.some((task) => task.done);
     });
 
     return {
-      tasks,
+      state,
       newTaskTitle,
       newTaskImportance,
       newTaskUrgency,
