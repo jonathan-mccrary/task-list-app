@@ -63,9 +63,9 @@
               Add Task
             </VariantButton>
             <VariantButton
-              :variant="'info'"
+              :variant="'dark'"
               :onClick="sortTasks"
-              :disabled="!showSortTasks"
+              :disabled="!enableSortTasks"
               :size="'lg'"
             >
               Sort Tasks
@@ -73,7 +73,7 @@
             <VariantButton
               :variant="'success'"
               :onClick="removeCompleted"
-              :disabled="!showRemoveCompleted"
+              :disabled="!enableRemoveCompleted"
               :size="'lg'"
             >
               Remove Completed
@@ -168,11 +168,11 @@ export default defineComponent({
       return tasks.value.length > 0;
     });
 
-    const showSortTasks = computed(() => {
+    const enableSortTasks = computed(() => {
       return tasks.value.length > 1;
     });
 
-    const showRemoveCompleted = computed(() => {
+    const enableRemoveCompleted = computed(() => {
       return tasks.value.length > 0 && tasks.value.some((task) => task.done);
     });
 
@@ -187,9 +187,9 @@ export default defineComponent({
       removeTask,
       sortTasks,
       enableAddTask,
-      showRemoveCompleted,
+      enableRemoveCompleted,
       showTasks,
-      showSortTasks,
+      enableSortTasks,
       Importance,
       Urgency,
     };

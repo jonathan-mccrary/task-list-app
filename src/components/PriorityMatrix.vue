@@ -10,7 +10,11 @@
           <div v-for="urgency in urgencies" :key="urgency" class="matrix-col">
             <div
               :class="['matrix-cell', getPriorityValue(importance, urgency)]"
-            ></div>
+            >
+              <div class="done-checkmark" :hidden="!done">
+                {{ checkMarkValue(importance, urgency) }}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -39,6 +43,10 @@ const props = defineProps({
     type: Number as PropType<Urgency>,
     required: true,
   },
+  done: {
+    type: Boolean as PropType<boolean>,
+    required: true,
+  },
 });
 
 const importances = computed(() => [
@@ -53,6 +61,14 @@ const getPriorityValue = (importance: Importance, urgency: Urgency): string => {
     const numbers = ["two", "three", "four", "five", "six"];
     const priority = importance + urgency;
     return numbers[priority - 2];
+  } else {
+    return "";
+  }
+};
+
+const checkMarkValue = (importance: Importance, urgency: Urgency): string => {
+  if (importance === props.importance && urgency === props.urgency) {
+    return "✔";
   } else {
     return "";
   }
@@ -126,5 +142,9 @@ const getPriorityValue = (importance: Importance, urgency: Urgency): string => {
 .matrix-cell.six {
   background-image: linear-gradient(to bottom right, darkorange, red);
   box-shadow: 0px 0px 10px darkred;
+}
+
+.done-checkmark {
+  padding: 12px;
 }
 </style>

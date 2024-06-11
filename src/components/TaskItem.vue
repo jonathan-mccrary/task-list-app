@@ -42,6 +42,7 @@
             <PriorityMatrix
               :importance="localTask.importance"
               :urgency="localTask.urgency"
+              :done="localTask.done"
             />
           </div>
         </div>
@@ -91,8 +92,6 @@ export default defineComponent({
   emits: ["remove-task", "update-task"],
   setup(props, emits) {
     const localTask = ref<Task>({ ...props.task });
-    const importances = [Importance.High, Importance.Medium, Importance.Low];
-    const urgencies = [Urgency.Low, Urgency.Medium, Urgency.High];
 
     const canRaiseImportance = computed(
       () =>
@@ -161,13 +160,10 @@ export default defineComponent({
 
     return {
       localTask,
-      importances,
-      urgencies,
       canRaiseImportance,
       canLowerImportance,
       canRaiseUrgency,
       canLowerUrgency,
-      priority,
       removeTask,
       increaseImportance,
       decreaseImportance,
